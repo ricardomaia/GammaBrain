@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GammaBrain - 40Hz Neural Stimulation</title>
+    <title>GammaBrain - Neural Stimulation</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root {
@@ -377,7 +377,6 @@
             color: var(--primary-color);
         }
 
-        /* Research-specific elements */
         .research-highlight {
             background-color: rgba(80, 80, 255, 0.1);
             padding: 1rem;
@@ -423,7 +422,6 @@
             min-height: 80px;
         }
 
-        /* Fullscreen mode styles */
         .fullscreen-mode {
             position: fixed;
             top: 0;
@@ -460,6 +458,57 @@
             padding: 0.5rem;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-color);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .modal-checkbox {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .fullscreen-exit-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.5rem 1rem;
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
         @media (max-width: 600px) {
             main {
                 padding: 1rem 0.7rem;
@@ -484,6 +533,11 @@
 
             .nav-tab {
                 padding: 0.8rem 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            .fullscreen-exit-btn {
+                padding: 0.3rem 0.8rem;
                 font-size: 0.9rem;
             }
         }
@@ -539,6 +593,28 @@
 </head>
 
 <body>
+    <!-- Modal de aviso -->
+    <div id="warning-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">×</span>
+            <h2>Atenção!</h2>
+            <p>Este aplicativo é baseado em pesquisas científicas sobre estimulação visual, mas é fornecido apenas para
+                fins educacionais e experimentais. Não é um dispositivo médico certificado.</p>
+            <ul>
+                <li>Não utilize em caso de epilepsia, fotossensibilidade, enxaqueca ou problemas neurológicos.</li>
+                <li>Pare imediatamente se sentir desconforto, tontura, dor de cabeça ou qualquer efeito adverso.</li>
+                <li>Consulte um profissional de saúde antes de iniciar qualquer regime de estimulação visual.</li>
+                <li>As telas de dispositivos comuns têm limitações técnicas para entregar precisamente as frequências.
+                </li>
+            </ul>
+            <div class="modal-checkbox">
+                <input type="checkbox" id="dont-show-again">
+                <label for="dont-show-again">Não exibir mais esse aviso</label>
+            </div>
+            <button class="btn-primary" style="margin-top: 1rem;" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
     <header>
         <div class="logo">
             <div class="logo-icon">
@@ -558,7 +634,7 @@
 
     <div class="nav-tab-container">
         <div class="nav-tabs">
-            <div class="nav-tab active" data-tab="stim-40hz">Estimulação 40Hz</div>
+            <div class="nav-tab active" data-tab="stim-40hz">Estimulação</div>
             <div class="nav-tab" data-tab="protocols">Protocolos</div>
             <div class="nav-tab" data-tab="research">Pesquisa</div>
             <div class="nav-tab" data-tab="progress">Histórico</div>
@@ -566,14 +642,13 @@
     </div>
 
     <main>
-
-        <!-- 40Hz Stimulation Tab -->
+        <!-- Estimulação -->
         <div class="tab-content active" id="stim-40hz">
             <div class="card">
-                <h2>Estimulação Visual a 40Hz</h2>
+                <h2>Estimulação Visual</h2>
                 <div class="badge">Baseado em pesquisa</div>
-                <p>A estimulação visual com luz pulsada a 40Hz demonstrou promover atividade cerebral na faixa gama e
-                    induzir uma resposta neuroimune única em estudos com animais (Garza et al., 2020).</p>
+                <p>A estimulação visual com luz pulsada demonstrou promover atividade cerebral na faixa gama e induzir
+                    uma resposta neuroimune única em estudos com animais (Garza et al., 2020).</p>
 
                 <div class="control-group">
                     <div class="slider-container">
@@ -593,10 +668,25 @@
 
                     <div class="slider-container">
                         <div class="slider-header">
-                            <label for="frequency">Frequência (Hz)</label>
-                            <span id="frequency-display">40 Hz</span>
+                            <label for="frequency">Frequência</label>
+                            <select id="frequency"
+                                style="width: 100%; background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; padding: 0.5rem;">
+                                <option value="20">20 Hz</option>
+                                <option value="40" selected>40 Hz (Padrão)</option>
+                            </select>
                         </div>
-                        <input type="range" id="frequency" min="38" max="42" value="40" step="0.5" disabled>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label for="animation-type">Tipo de Animação</label>
+                            <select id="animation-type"
+                                style="width: 100%; background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; padding: 0.5rem;">
+                                <option value="flash">Flash (Padrão)</option>
+                                <option value="fade">Fade Suave</option>
+                                <option value="pulse">Pulso</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="slider-container">
@@ -625,8 +715,8 @@
             </div>
 
             <div class="card">
-                <h3>Benefícios Potenciais da Estimulação a 40Hz</h3>
-                <p>Pesquisas preliminares sugerem que a estimulação visual a 40Hz pode:</p>
+                <h3>Benefícios Potenciais da Estimulação</h3>
+                <p>Pesquisas preliminares sugerem que a estimulação visual pode:</p>
                 <ul>
                     <li>Promover a sinalização neuroimune através da via NF-κB e MAPK</li>
                     <li>Aumentar a expressão de citocinas que promovem a atividade microglial</li>
@@ -779,18 +869,6 @@
                 <button id="save-notes" class="btn-primary" style="margin-top: 1rem;">Salvar Anotações</button>
             </div>
         </div>
-
-        <div class="warning-card">
-            <strong>ATENÇÃO!</strong> Este aplicativo é baseado em pesquisas científicas sobre estimulação visual a
-            40Hz, mas é fornecido apenas para fins educacionais e experimentais. Não é um dispositivo médico
-            certificado.
-            <ul>
-                <li>Não utilize em caso de epilepsia, fotossensibilidade, enxaqueca ou problemas neurológicos.</li>
-                <li>Pare imediatamente se sentir desconforto, tontura, dor de cabeça ou qualquer efeito adverso.</li>
-                <li>Consulte um profissional de saúde antes de iniciar qualquer regime de estimulação visual.</li>
-                <li>As telas de dispositivos comuns têm limitações técnicas para entregar precisamente 40Hz.</li>
-            </ul>
-        </div>
     </main>
 
     <footer>
@@ -799,272 +877,254 @@
             <a href="#research">Pesquisa</a>
             <a href="#privacy">Privacidade</a>
         </div>
-        <p>GammaBrain - Aplicativo de Estimulação Visual a 40Hz</p>
+        <p>GammaBrain - Aplicativo de Estimulação Visual</p>
         <p>Este aplicativo tem fins educacionais e experimentais apenas</p>
         <p>Baseado nas pesquisas de Garza et al. (2020)</p>
     </footer>
 
     <script>
-        // Navigation tabs functionality
+        // Modal functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('warning-modal');
+            const dontShowAgain = document.getElementById('dont-show-again');
+            if (!localStorage.getItem('hideWarning')) {
+                modal.style.display = 'flex';
+            }
+            updateSessionHistory();
+            updateSessionsCount();
+        });
+
+        function closeModal() {
+            const modal = document.getElementById('warning-modal');
+            const dontShowAgain = document.getElementById('dont-show-again');
+            if (dontShowAgain.checked) {
+                localStorage.setItem('hideWarning', 'true');
+            }
+            modal.style.display = 'none';
+        }
+
+        // Navigation tabs
         const tabs = document.querySelectorAll('.nav-tab');
         const tabContents = document.querySelectorAll('.tab-content');
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.getAttribute('data-tab');
-
-                // Deactivate all tabs
                 tabs.forEach(t => t.classList.remove('active'));
                 tabContents.forEach(c => c.classList.remove('active'));
-
-                // Activate selected tab
                 tab.classList.add('active');
                 document.getElementById(tabId).classList.add('active');
             });
         });
 
-        // 40Hz Stimulation controls
+        // Stimulation controls
         const intensitySlider = document.getElementById('intensity');
         const intensityValue = document.getElementById('intensity-value');
         const durationInput = document.getElementById('duration');
+        const frequencySelect = document.getElementById('frequency');
+        const animationType = document.getElementById('animation-type');
         const startButton = document.getElementById('start-btn');
         const stopButton = document.getElementById('stop-btn');
+        const fullscreenButton = document.getElementById('fullscreen-btn');
         const stimScreen = document.getElementById('stim-screen');
         const sessionTimer = document.getElementById('session-timer');
         const sessionsCount = document.getElementById('sessions-count');
+        const sessionHistory = document.getElementById('session-history');
+        const notesTextarea = document.getElementById('notes');
+        const saveNotesButton = document.getElementById('save-notes');
 
-        // Stimulation variables
         let stimInterval = null;
         let timerInterval = null;
         let sessionSeconds = 0;
         let isStimulating = false;
 
-        // Update intensity value display
         intensitySlider.addEventListener('input', () => {
             intensityValue.textContent = `${intensitySlider.value}%`;
         });
 
-        // Start stimulation
-        startButton.addEventListener('click', () => {
-            if (isStimulating) return;
-
-            const intensity = intensitySlider.value;
-            const duration = durationInput.value;
-            const maxSeconds = duration * 60;
-
-            // Update button states
-            startButton.style.display = 'none';
-            stopButton.style.display = 'block';
-
-            // Reset timer
-            sessionSeconds = 0;
-            updateTimer();
-
-            // Extract stimulation logic to a separate function for reuse
-            function startStimulation(intensity, duration, maxSeconds, isFullscreen = false) {
-                // Set opacity based on intensity
-                const opacity = intensity / 100;
-                const lightColor = document.getElementById('light-color').value;
-
-                // Determine color based on selection
-                let colorValue;
-                switch (lightColor) {
-                    case 'red':
-                        colorValue = `rgba(255, 0, 0, ${opacity})`;
-                        break;
-                    case 'blue':
-                        colorValue = `rgba(0, 0, 255, ${opacity})`;
-                        break;
-                    case 'green':
-                        colorValue = `rgba(0, 255, 0, ${opacity})`;
-                        break;
-                    case 'white':
-                    default:
-                        colorValue = `rgba(255, 255, 255, ${opacity})`;
-                        break;
-                }
-
-                // Start the 40Hz flicker - 12.5ms on, 12.5ms off
-                isStimulating = true;
-                let isOn = false;
-
-                // Update button states if not in fullscreen mode
-                if (!isFullscreen) {
-                    startButton.style.display = 'none';
-                    stopButton.style.display = 'block';
-                }
-
-                stimInterval = setInterval(() => {
-                    if (isOn) {
-                        if (isFullscreen) {
-                            document.getElementById('fullscreen-content').style.backgroundColor = '#000';
-                        } else {
-                            stimScreen.style.backgroundColor = '#000';
-                        }
-                        isOn = false;
-                    } else {
-                        // Apply selected color with opacity based on intensity setting
-                        if (isFullscreen) {
-                            document.getElementById('fullscreen-content').style.backgroundColor = colorValue;
-                        } else {
-                            stimScreen.style.backgroundColor = colorValue;
-                        }
-                        isOn = true;
-                    }
-                }, 12.5); // 40Hz = 25ms period, half on and half off
-
-                // Update timer
-                timerInterval = setInterval(() => {
-                    sessionSeconds++;
-                    updateTimer(isFullscreen);
-
-                    // Check if session is complete
-                    if (sessionSeconds >= maxSeconds) {
-                        stopStimulation();
-                        saveSession(true);
-                    }
-                }, 1000);
-
-                // Add session to history once started
-                addSessionToHistory(duration, intensity);
+        function startStimulation(intensity, duration, frequency, animation, maxSeconds, isFullscreen = false) {
+            const opacity = intensity / 100;
+            const lightColor = document.getElementById('light-color').value;
+            let colorValue;
+            switch (lightColor) {
+                case 'red': colorValue = `rgba(255, 0, 0, ${opacity})`; break;
+                case 'blue': colorValue = `rgba(0, 0, 255, ${opacity})`; break;
+                case 'green': colorValue = `rgba(0, 255, 0, ${opacity})`; break;
+                case 'white': default: colorValue = `rgba(255, 255, 255, ${opacity})`; break;
             }
 
-            // Check if fullscreen mode is active
-            const isFullscreenActive = document.getElementById('fullscreen-mode-container') !== null;
+            isStimulating = true;
+            if (!isFullscreen) {
+                startButton.style.display = 'none';
+                stopButton.style.display = 'block';
+            }
 
-            // Update timer
+            const period = 1000 / frequency / 2; // Half period in ms
+
+            if (animation === 'flash') {
+                let isOn = false;
+                stimInterval = setInterval(() => {
+                    if (isOn) {
+                        setBackground(isFullscreen, '#000');
+                        isOn = false;
+                    } else {
+                        setBackground(isFullscreen, colorValue);
+                        isOn = true;
+                    }
+                }, period);
+            } else if (animation === 'fade') {
+                let opacityLevel = 0;
+                let fadingIn = true;
+                stimInterval = setInterval(() => {
+                    opacityLevel = fadingIn ? opacityLevel + 0.1 : opacityLevel - 0.1;
+                    if (opacityLevel >= 1) fadingIn = false;
+                    if (opacityLevel <= 0) fadingIn = true;
+                    setBackground(isFullscreen, `${lightColor === 'white' ? 'rgba(255, 255, 255' : lightColor === 'red' ? 'rgba(255, 0, 0' : lightColor === 'blue' ? 'rgba(0, 0, 255' : 'rgba(0, 255, 0'}, ${opacityLevel * opacity})`);
+                }, period / 10);
+            } else if (animation === 'pulse') {
+                stimInterval = setInterval(() => {
+                    setBackground(isFullscreen, colorValue);
+                    setTimeout(() => setBackground(isFullscreen, '#000'), period * 0.7);
+                }, period * 2);
+            }
+
             timerInterval = setInterval(() => {
                 sessionSeconds++;
-                updateTimer(isFullscreenActive);
-
-                // Check if session is complete
+                updateTimer(isFullscreen);
                 if (sessionSeconds >= maxSeconds) {
                     stopStimulation();
                     saveSession(true);
                 }
             }, 1000);
 
-            // Add session to history once started
-            addSessionToHistory(duration, intensity);
-        });
+            addSessionToHistory(duration, intensity, frequency);
+        }
 
-        // Stop stimulation function
+        function setBackground(isFullscreen, color) {
+            if (isFullscreen) {
+                document.getElementById('fullscreen-content').style.backgroundColor = color;
+            } else {
+                stimScreen.style.backgroundColor = color;
+            }
+        }
+
         function stopStimulation() {
             if (!isStimulating) return;
-
-            // Clear intervals
             clearInterval(stimInterval);
             clearInterval(timerInterval);
-
-            // Reset stimulation state
             isStimulating = false;
-
-            // Reset background color
             stimScreen.style.backgroundColor = '#000';
-
-            // Check if in fullscreen mode and reset
             const fullscreenContainer = document.getElementById('fullscreen-mode-container');
-            if (fullscreenContainer) {
-                document.body.removeChild(fullscreenContainer);
-            }
-
-            // Update button states
+            if (fullscreenContainer) document.body.removeChild(fullscreenContainer);
             startButton.style.display = 'block';
             stopButton.style.display = 'none';
         }
 
-        // Save completed session
         function saveSession(completed = false) {
             try {
                 let sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
-
-                // Update the last session to mark as completed if needed
                 if (completed && sessions.length > 0) {
                     const lastSession = sessions[sessions.length - 1];
                     lastSession.completed = true;
                     localStorage.setItem('gamma-sessions', JSON.stringify(sessions));
                 }
-
-                // Update the count display
                 updateSessionsCount();
             } catch (e) {
                 console.error('Error saving session status', e);
             }
         }
 
-        // Stop button event listener
-        stopButton.addEventListener('click', () => {
-            stopStimulation();
+        startButton.addEventListener('click', () => {
+            if (isStimulating) return;
+            const intensity = intensitySlider.value;
+            const duration = durationInput.value;
+            const frequency = parseInt(frequencySelect.value);
+            const animation = animationType.value;
+            const maxSeconds = duration * 60;
+            startStimulation(intensity, duration, frequency, animation, maxSeconds, false);
         });
 
-        // Update timer display
-        function updateTimer(useFullscreen = false) {
+        stopButton.addEventListener('click', stopStimulation);
+
+        fullscreenButton.addEventListener('click', () => {
+            if (isStimulating) stopStimulation();
+
+            const fullscreenContainer = document.createElement('div');
+            fullscreenContainer.id = 'fullscreen-mode-container';
+            fullscreenContainer.className = 'fullscreen-mode';
+            fullscreenContainer.innerHTML = `
+                <div id="fullscreen-content" style="width: 100%; height: 100%;"></div>
+                <div class="fullscreen-info">Pressione ESC ou o botão para sair</div>
+                <div id="fullscreen-timer" class="fullscreen-timer">00:00</div>
+                <button class="fullscreen-exit-btn" onclick="stopStimulation()">Sair</button>
+            `;
+            document.body.appendChild(fullscreenContainer);
+
+            const intensity = intensitySlider.value;
+            const duration = durationInput.value;
+            const frequency = parseInt(frequencySelect.value);
+            const animation = animationType.value;
+            const maxSeconds = duration * 60;
+            sessionSeconds = 0;
+            updateTimer(true);
+            startStimulation(intensity, duration, frequency, animation, maxSeconds, true);
+
+            document.addEventListener('keydown', handleEscKeyPress);
+        });
+
+        function handleEscKeyPress(event) {
+            if (event.key === 'Escape') {
+                stopStimulation();
+                document.removeEventListener('keydown', handleEscKeyPress);
+            }
+        }
+
+        function updateTimer(isFullscreen = false) {
             const minutes = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
             const seconds = (sessionSeconds % 60).toString().padStart(2, '0');
             const totalMinutes = Math.floor(durationInput.value);
-
             const timerText = `${minutes}:${seconds} / ${totalMinutes}:00`;
-
-            if (useFullscreen) {
+            if (isFullscreen) {
                 document.getElementById('fullscreen-timer').textContent = timerText;
             } else {
                 sessionTimer.textContent = timerText;
             }
         }
 
-        // Protocol cards functionality
+        // Protocol cards
         const protocolCards = document.querySelectorAll('.protocol-card');
-
         protocolCards.forEach(card => {
             card.addEventListener('click', () => {
                 const protocolDuration = card.getAttribute('data-duration');
                 const protocolIntensity = card.getAttribute('data-intensity');
-
                 durationInput.value = protocolDuration;
                 intensitySlider.value = protocolIntensity;
                 intensityValue.textContent = `${protocolIntensity}%`;
-
-                // Switch to stimulation tab
                 tabs.forEach(t => t.classList.remove('active'));
                 tabContents.forEach(c => c.classList.remove('active'));
-
                 document.querySelector('[data-tab="stim-40hz"]').classList.add('active');
                 document.getElementById('stim-40hz').classList.add('active');
-
-                // Scroll to stimulation controls
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
 
-        // Session history functionality
-        const sessionHistory = document.getElementById('session-history');
-        const notesTextarea = document.getElementById('notes');
-        const saveNotesButton = document.getElementById('save-notes');
-
-        function addSessionToHistory(duration, intensity) {
+        // Session history
+        function addSessionToHistory(duration, intensity, frequency) {
             try {
-                // Create current date string
                 const now = new Date();
                 const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 const sessionId = now.getTime().toString();
-
-                // Store in localStorage
                 let sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
                 sessions.push({
                     id: sessionId,
                     date: dateStr,
                     duration: duration,
                     intensity: intensity,
-                    frequency: 40,
+                    frequency: frequency,
                     completed: false,
                     notes: ''
                 });
                 localStorage.setItem('gamma-sessions', JSON.stringify(sessions));
-
-                // Update the UI
                 updateSessionHistory();
                 updateSessionsCount();
             } catch (e) {
@@ -1072,17 +1132,12 @@
             }
         }
 
-        // Load and display session history
         function updateSessionHistory() {
             try {
                 const sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
-
                 if (sessions.length > 0) {
                     sessionHistory.innerHTML = '';
-
-                    // Show only last 10 sessions in reverse chronological order
                     const recentSessions = sessions.slice(-10).reverse();
-
                     recentSessions.forEach(session => {
                         const sessionItem = document.createElement('li');
                         sessionItem.className = 'session-item';
@@ -1095,7 +1150,6 @@
                                 <span class="badge">${session.completed ? 'Completo' : 'Interrompido'}</span>
                             </div>
                         `;
-
                         sessionHistory.appendChild(sessionItem);
                     });
                 }
@@ -1104,12 +1158,10 @@
             }
         }
 
-        // Update the total sessions count
         function updateSessionsCount() {
             try {
                 const sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
                 const completedSessions = sessions.filter(s => s.completed).length;
-
                 if (sessions.length > 0) {
                     sessionsCount.innerHTML = `
                         Total: <strong>${sessions.length}</strong> sessões<br>
@@ -1124,18 +1176,10 @@
             }
         }
 
-        // Calculate total time from all sessions
         function calculateTotalTime(sessions) {
             const totalMinutes = sessions.reduce((total, session) => {
-                // If session was completed, use full duration, otherwise estimate based on completed percentage
-                if (session.completed) {
-                    return total + parseInt(session.duration);
-                } else {
-                    // Assume 50% completion if not marked as completed
-                    return total + (parseInt(session.duration) / 2);
-                }
+                return session.completed ? total + parseInt(session.duration) : total + (parseInt(session.duration) / 2);
             }, 0);
-
             if (totalMinutes < 60) {
                 return `${totalMinutes} minutos`;
             } else {
@@ -1145,22 +1189,14 @@
             }
         }
 
-        // Save notes functionality
         saveNotesButton.addEventListener('click', () => {
             try {
                 const notes = notesTextarea.value.trim();
                 const now = new Date();
                 const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-                // Save notes to localStorage
                 let savedNotes = JSON.parse(localStorage.getItem('gamma-notes')) || [];
-                savedNotes.push({
-                    date: dateStr,
-                    text: notes
-                });
+                savedNotes.push({ date: dateStr, text: notes });
                 localStorage.setItem('gamma-notes', JSON.stringify(savedNotes));
-
-                // Clear textarea and show confirmation
                 notesTextarea.value = '';
                 alert('Anotações salvas com sucesso!');
             } catch (e) {
@@ -1169,141 +1205,7 @@
             }
         });
 
-        // Load history on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            updateSessionHistory();
-            updateSessionsCount();
-        });
-
-        // Fullscreen mode functionality
-        const fullscreenButton = document.getElementById('fullscreen-btn');
-
-        fullscreenButton.addEventListener('click', () => {
-            if (isStimulating) {
-                // If already stimulating, first stop it
-                stopStimulation();
-            }
-
-            // Create fullscreen container
-            const fullscreenContainer = document.createElement('div');
-            fullscreenContainer.id = 'fullscreen-mode-container';
-            fullscreenContainer.className = 'fullscreen-mode';
-
-            // Create content for fullscreen mode
-            fullscreenContainer.innerHTML = `
-                <div id="fullscreen-content" style="width: 100%; height: 100%;"></div>
-                <div class="fullscreen-info">Pressione ESC para sair do modo tela cheia e parar a estimulação</div>
-                <div id="fullscreen-timer" class="fullscreen-timer">00:00</div>
-            `;
-
-            // Add to body
-            document.body.appendChild(fullscreenContainer);
-
-            // Start stimulation in fullscreen mode
-            const intensity = intensitySlider.value;
-            const duration = durationInput.value;
-            const maxSeconds = duration * 60;
-
-            // Reset timer
-            sessionSeconds = 0;
-            updateTimer(true);
-
-            // Start stimulation with same parameters but in fullscreen
-            startStimulation(intensity, duration, maxSeconds, true);
-
-            // Add ESC key event listener
-            document.addEventListener('keydown', handleEscKeyPress);
-        });
-
-        // Function to handle ESC key press
-        function handleEscKeyPress(event) {
-            if (event.key === 'Escape') {
-                stopStimulation();
-                document.removeEventListener('keydown', handleEscKeyPress);
-            }
-        }
-
-        // Extract stimulation logic to a separate function for reuse
-        function startStimulation(intensity, duration, maxSeconds, isFullscreen = false) {
-            // Set opacity based on intensity
-            const opacity = intensity / 100;
-            const lightColor = document.getElementById('light-color').value;
-
-            // Determine color based on selection
-            let colorValue;
-            switch (lightColor) {
-                case 'red':
-                    colorValue = `rgba(255, 0, 0, ${opacity})`;
-                    break;
-                case 'blue':
-                    colorValue = `rgba(0, 0, 255, ${opacity})`;
-                    break;
-                case 'green':
-                    colorValue = `rgba(0, 255, 0, ${opacity})`;
-                    break;
-                case 'white':
-                default:
-                    colorValue = `rgba(255, 255, 255, ${opacity})`;
-                    break;
-            }
-
-            // Start the 40Hz flicker - 12.5ms on, 12.5ms off
-            isStimulating = true;
-            let isOn = false;
-
-            // Update button states if not in fullscreen mode
-            if (!isFullscreen) {
-                startButton.style.display = 'none';
-                stopButton.style.display = 'block';
-            }
-
-            stimInterval = setInterval(() => {
-                if (isOn) {
-                    if (isFullscreen) {
-                        document.getElementById('fullscreen-content').style.backgroundColor = '#000';
-                    } else {
-                        stimScreen.style.backgroundColor = '#000';
-                    }
-                    isOn = false;
-                } else {
-                    // Apply selected color with opacity based on intensity setting
-                    if (isFullscreen) {
-                        document.getElementById('fullscreen-content').style.backgroundColor = colorValue;
-                    } else {
-                        stimScreen.style.backgroundColor = colorValue;
-                    }
-                    isOn = true;
-                }
-            }, 12.5); // 40Hz = 25ms period, half on and half off
-
-            // Update timer
-            timerInterval = setInterval(() => {
-                sessionSeconds++;
-                updateTimer(isFullscreen);
-
-                // Check if session is complete
-                if (sessionSeconds >= maxSeconds) {
-                    stopStimulation();
-                    saveSession(true);
-                }
-            }, 1000);
-
-            // Add session to history once started
-            addSessionToHistory(duration, intensity);
-        }
-
-        // Update start button click handler to use the new function
-        startButton.addEventListener('click', () => {
-            if (isStimulating) return;
-
-            const intensity = intensitySlider.value;
-            const duration = durationInput.value;
-            const maxSeconds = duration * 60;
-
-            startStimulation(intensity, duration, maxSeconds, false);
-        });
-
-        // Service Worker Registration for PWA
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
