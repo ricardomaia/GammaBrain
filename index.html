@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GammaBrain - 40Hz Neural Stimulation</title>
-    <link rel="manifest"
-        href="data:application/json;base64,ewogICJuYW1lIjogIkdhbW1hQnJhaW4iLAogICJzaG9ydF9uYW1lIjogIkdhbW1hQnJhaW4iLAogICJzdGFydF91cmwiOiAiLi9pbmRleC5odG1sIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMjEyMTIxIiwKICAidGhlbWVfY29sb3IiOiAiIzUwNTBmZiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImljb24ucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
+    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --primary-color: #5050ff;
@@ -567,17 +566,6 @@
     </div>
 
     <main>
-        <div class="warning-card">
-            <strong>ATENÇÃO!</strong> Este aplicativo é baseado em pesquisas científicas sobre estimulação visual a
-            40Hz, mas é fornecido apenas para fins educacionais e experimentais. Não é um dispositivo médico
-            certificado.
-            <ul>
-                <li>Não utilize em caso de epilepsia, fotossensibilidade, enxaqueca ou problemas neurológicos.</li>
-                <li>Pare imediatamente se sentir desconforto, tontura, dor de cabeça ou qualquer efeito adverso.</li>
-                <li>Consulte um profissional de saúde antes de iniciar qualquer regime de estimulação visual.</li>
-                <li>As telas de dispositivos comuns têm limitações técnicas para entregar precisamente 40Hz.</li>
-            </ul>
-        </div>
 
         <!-- 40Hz Stimulation Tab -->
         <div class="tab-content active" id="stim-40hz">
@@ -790,6 +778,18 @@
                     placeholder="Adicione suas observações aqui..."></textarea>
                 <button id="save-notes" class="btn-primary" style="margin-top: 1rem;">Salvar Anotações</button>
             </div>
+        </div>
+
+        <div class="warning-card">
+            <strong>ATENÇÃO!</strong> Este aplicativo é baseado em pesquisas científicas sobre estimulação visual a
+            40Hz, mas é fornecido apenas para fins educacionais e experimentais. Não é um dispositivo médico
+            certificado.
+            <ul>
+                <li>Não utilize em caso de epilepsia, fotossensibilidade, enxaqueca ou problemas neurológicos.</li>
+                <li>Pare imediatamente se sentir desconforto, tontura, dor de cabeça ou qualquer efeito adverso.</li>
+                <li>Consulte um profissional de saúde antes de iniciar qualquer regime de estimulação visual.</li>
+                <li>As telas de dispositivos comuns têm limitações técnicas para entregar precisamente 40Hz.</li>
+            </ul>
         </div>
     </main>
 
