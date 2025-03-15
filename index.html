@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GammaBrain - 40Hz Neural Stimulation</title>
+    <link rel="manifest"
+        href="data:application/json;base64,ewogICJuYW1lIjogIkdhbW1hQnJhaW4iLAogICJzaG9ydF9uYW1lIjogIkdhbW1hQnJhaW4iLAogICJzdGFydF91cmwiOiAiLi9pbmRleC5odG1sIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMjEyMTIxIiwKICAidGhlbWVfY29sb3IiOiAiIzUwNTBmZiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImljb24ucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
+    <style>
+        :root {
+            --primary-color: #5050ff;
+            --accent-color: #7070ff;
+            --text-color: #f0f0f0;
+            --bg-color: #212121;
+            --card-color: #2c2c2c;
+            --header-color: #1a1a1a;
+            --warning-color: #ff5252;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--header-color);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-waves {
+            width: 1.2rem;
+            height: 1.2rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .wave {
+            height: 0.15rem;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+        main {
+            margin-top: 4rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            max-width: 800px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .warning-card {
+            background-color: rgba(255, 82, 82, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        section {
+            margin-bottom: 2rem;
+        }
+
+        ul,
+        ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-tab-container {
+            background-color: var(--header-color);
+            overflow-x: auto;
+            position: fixed;
+            top: 4rem;
+            width: 100%;
+            z-index: 90;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tabs {
+            display: flex;
+            padding: 0 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .nav-tab {
+            padding: 1rem 1.2rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding-top: 1rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            width: 80px;
+            text-align: center;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-stop {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-stop:hover {
+            background-color: #ff7070;
+        }
+
+        .stim-display {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            background-color: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .protocol-card {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .protocol-card:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(80, 80, 255, 0.05);
+        }
+
+        .protocol-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .protocol-card p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .data-section {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .data-chart {
+            width: 100%;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin: 1rem 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .session-history {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .session-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-date {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background-color: var(--header-color);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Research-specific elements */
+        .research-highlight {
+            background-color: rgba(80, 80, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .citation {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+
+        .research-quote {
+            padding: 0.5rem 1rem;
+            border-left: 3px solid var(--primary-color);
+            margin: 1rem 0;
+            font-style: italic;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-nav a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .header-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Fullscreen mode styles */
+        .fullscreen-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-info {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .fullscreen-timer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            main {
+                padding: 1rem 0.7rem;
+                margin-top: 7rem;
+            }
+
+            .header-nav {
+                display: none;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .stim-display {
+                height: 200px;
+            }
+
+            .nav-tab {
+                padding: 0.8rem 0.6rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --primary-color: #4040ff;
+                --accent-color: #5050ff;
+                --text-color: #212121;
+                --bg-color: #f7f7f7;
+                --card-color: #ffffff;
+                --header-color: #ffffff;
+                --warning-color: #d32f2f;
+            }
+
+            header,
+            .nav-tab-container {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .card {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .warning-card {
+                background-color: rgba(211, 47, 47, 0.05);
+            }
+
+            input[type="range"] {
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            input[type="number"] {
+                background-color: rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-secondary {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-secondary:hover {
+                background-color: rgba(0, 0, 0, 0.2);
+            }
+
+            textarea {
+                background-color: rgba(0, 0, 0, 0.05) !important;
+                border: 1px solid rgba(0, 0, 0, 0.1) !important;
+                color: var(--text-color) !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <div class="logo-waves">
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                    <div class="wave"></div>
+                </div>
+            </div>
+            GammaBrain
+        </div>
+        <div class="header-nav">
+            <a href="#research">Pesquisa</a>
+            <a href="#about">Sobre</a>
+        </div>
+    </header>
+
+    <div class="nav-tab-container">
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="stim-40hz">Estimulação 40Hz</div>
+            <div class="nav-tab" data-tab="protocols">Protocolos</div>
+            <div class="nav-tab" data-tab="research">Pesquisa</div>
+            <div class="nav-tab" data-tab="progress">Histórico</div>
+        </div>
+    </div>
+
+    <main>
+        <div class="warning-card">
+            <strong>ATENÇÃO!</strong> Este aplicativo é baseado em pesquisas científicas sobre estimulação visual a
+            40Hz, mas é fornecido apenas para fins educacionais e experimentais. Não é um dispositivo médico
+            certificado.
+            <ul>
+                <li>Não utilize em caso de epilepsia, fotossensibilidade, enxaqueca ou problemas neurológicos.</li>
+                <li>Pare imediatamente se sentir desconforto, tontura, dor de cabeça ou qualquer efeito adverso.</li>
+                <li>Consulte um profissional de saúde antes de iniciar qualquer regime de estimulação visual.</li>
+                <li>As telas de dispositivos comuns têm limitações técnicas para entregar precisamente 40Hz.</li>
+            </ul>
+        </div>
+
+        <!-- 40Hz Stimulation Tab -->
+        <div class="tab-content active" id="stim-40hz">
+            <div class="card">
+                <h2>Estimulação Visual a 40Hz</h2>
+                <div class="badge">Baseado em pesquisa</div>
+                <p>A estimulação visual com luz pulsada a 40Hz demonstrou promover atividade cerebral na faixa gama e
+                    induzir uma resposta neuroimune única em estudos com animais (Garza et al., 2020).</p>
+
+                <div class="control-group">
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label for="intensity">Intensidade</label>
+                            <span id="intensity-value">50%</span>
+                        </div>
+                        <input type="range" id="intensity" min="10" max="100" value="50" step="5">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label for="duration">Duração (minutos)</label>
+                            <input type="number" id="duration" min="1" max="60" value="20">
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label for="frequency">Frequência (Hz)</label>
+                            <span id="frequency-display">40 Hz</span>
+                        </div>
+                        <input type="range" id="frequency" min="38" max="42" value="40" step="0.5" disabled>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <label for="light-color">Cor da Luz</label>
+                            <select id="light-color"
+                                style="width: 100%; background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; padding: 0.5rem;">
+                                <option value="white">Luz Branca (Default do Estudo)</option>
+                                <option value="red">Luz Vermelha</option>
+                                <option value="blue">Luz Azul</option>
+                                <option value="green">Luz Verde</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="start-btn" class="btn-primary">Iniciar Estimulação</button>
+                        <button id="stop-btn" class="btn-stop" style="display: none;">Parar</button>
+                        <button id="fullscreen-btn" class="btn-secondary">Modo Tela Cheia</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stim-display" id="stim-screen">
+                <div class="timer" id="session-timer">00:00</div>
+            </div>
+
+            <div class="card">
+                <h3>Benefícios Potenciais da Estimulação a 40Hz</h3>
+                <p>Pesquisas preliminares sugerem que a estimulação visual a 40Hz pode:</p>
+                <ul>
+                    <li>Promover a sinalização neuroimune através da via NF-κB e MAPK</li>
+                    <li>Aumentar a expressão de citocinas que promovem a atividade microglial</li>
+                    <li>Estimular uma resposta imune diferente da inflamação aguda</li>
+                    <li>Apoiar potencialmente a saúde neuronal e a plasticidade sináptica</li>
+                </ul>
+                <div class="research-highlight">
+                    <p>A estimulação visual a 40Hz mostrou ativar rapidamente vias de sinalização imune críticas no
+                        cérebro de animais saudáveis.</p>
+                    <div class="citation">- Garza et al. (2020). Gamma Visual Stimulation Induces a Neuroimmune
+                        Signaling Profile Distinct from Acute Neuroinflammation.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Protocols Tab -->
+        <div class="tab-content" id="protocols">
+            <div class="card">
+                <h2>Protocolos de Estimulação</h2>
+                <p>Escolha entre protocolos predefinidos baseados em pesquisas científicas.</p>
+
+                <div class="protocol-card" data-duration="20" data-intensity="60">
+                    <div class="badge">Padrão</div>
+                    <h3>Protocolo 40Hz Padrão</h3>
+                    <p>20 minutos de estimulação a 40Hz com intensidade moderada. Baseado em estudos experimentais.</p>
+                </div>
+
+                <div class="protocol-card" data-duration="60" data-intensity="40">
+                    <div class="badge">Estendido</div>
+                    <h3>Sessão Estendida</h3>
+                    <p>60 minutos de estimulação a 40Hz com menor intensidade. Para exposição mais longa conforme
+                        estudos de Iaccarino et al.</p>
+                </div>
+
+                <div class="protocol-card" data-duration="5" data-intensity="70">
+                    <div class="badge">Inicial</div>
+                    <h3>Protocolo Inicial</h3>
+                    <p>5 minutos de estimulação a 40Hz para usuários que estão começando ou testando sua sensibilidade.
+                    </p>
+                </div>
+
+                <div class="protocol-card" data-duration="15" data-intensity="50">
+                    <div class="badge">NF-κB</div>
+                    <h3>Protocolo NF-κB</h3>
+                    <p>15 minutos de estimulação a 40Hz, duração ideal para ativar a via NF-κB conforme estudos de Garza
+                        et al.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Por que 40Hz?</h3>
+                <p>A frequência de 40Hz está dentro da banda gama de oscilações cerebrais (30-50Hz). Estudos mostram
+                    que:</p>
+                <ul>
+                    <li>A estimulação a 40Hz induz atividade neural sincronizada em 40Hz no córtex visual</li>
+                    <li>Esta frequência específica produz uma resposta neuroimune única, diferente de outras frequências
+                        como 20Hz</li>
+                    <li>Ativa vias NF-κB e MAPK que regulam expressão de citocinas protetoras</li>
+                    <li>Pode ter efeitos neuroprotetores em condições neurodegenerativas</li>
+                </ul>
+                <div class="research-quote">
+                    "Diferentes frequências de estimulação visual induzem perfis únicos de expressão de citocinas." -
+                    Garza et al. (2020)
+                </div>
+            </div>
+        </div>
+
+        <!-- Research Tab -->
+        <div class="tab-content" id="research">
+            <div class="card">
+                <h2>Base Científica</h2>
+                <p>Este aplicativo é baseado em pesquisas recentes sobre o efeito da estimulação visual a 40Hz na
+                    sinalização neuroimune.</p>
+
+                <div class="research-highlight">
+                    <h3>Estudo Principal</h3>
+                    <p>O estudo "Gamma Visual Stimulation Induces a Neuroimmune Signaling Profile Distinct from Acute
+                        Neuroinflammation" (Garza et al., 2020) descobriu que:</p>
+                    <ul>
+                        <li>A estimulação visual a 40Hz ativa rapidamente as vias NF-κB e MAPK</li>
+                        <li>Aumenta a expressão de citocinas específicas como M-CSF, IL-6, MIG e IL-4</li>
+                        <li>Promove um perfil imune diferente da neuroinflamação aguda</li>
+                        <li>Pode ter efeitos neuroprotetores</li>
+                    </ul>
+                    <p><strong>Nota sobre a luz usada:</strong> O estudo utilizou luz LED com luminância de 150 lux.
+                        Embora a cor específica não tenha sido mencionada no artigo, a maioria dos estudos desta
+                        natureza utiliza luz branca LED. As pesquisas sugerem que a frequência (40Hz) é o parâmetro
+                        principal, embora diferentes comprimentos de onda (cores) possam ter efeitos biológicos
+                        distintos.</p>
+                </div>
+
+                <h3>Mecanismo de Ação</h3>
+                <p>A luz pulsada a 40Hz induz atividade neural em frequência gama, que então:</p>
+                <ol>
+                    <li>Ativa a via NF-κB após ~15 minutos de estimulação</li>
+                    <li>Ativa a via MAPK após ~60 minutos</li>
+                    <li>Aumenta a expressão de citocinas específicas que promovem estados microgliais fagocíticos</li>
+                    <li>Estimula a expressão de quimiocinas microgliais</li>
+                </ol>
+
+                <div class="research-quote">
+                    "Nossos resultados são os primeiros a delinear uma resposta específica de sinalização imune rápida
+                    após estimulação visual a 40Hz, destacando tanto a natureza única quanto o potencial terapêutico
+                    deste tratamento." - Garza et al. (2020)
+                </div>
+
+                <h3>Outras Pesquisas Relacionadas</h3>
+                <ul>
+                    <li>Iaccarino et al. (2016) - Mostrou que a estimulação a 40Hz reduz a carga amiloide em modelos de
+                        Alzheimer</li>
+                    <li>Adaikkan et al. (2019) - Demonstrou que o recrutamento da micróglia pela estimulação gama
+                        oferece neuroproteção</li>
+                    <li>Singer et al. (2018) - Desenvolveu protocolos de estimulação visual a 40Hz não invasiva</li>
+                </ul>
+
+                <p><strong>Nota:</strong> Estudos em humanos ainda são limitados e esta área de pesquisa está em
+                    andamento.</p>
+            </div>
+        </div>
+
+        <!-- Progress Tab -->
+        <div class="tab-content" id="progress">
+            <div class="card">
+                <h2>Histórico de Sessões</h2>
+                <p>Acompanhe seu histórico de estimulação visual.</p>
+
+                <div class="data-section">
+                    <h3>Total de Sessões</h3>
+                    <div class="data-chart">
+                        <span id="sessions-count">Nenhuma sessão registrada</span>
+                    </div>
+                </div>
+
+                <h3>Sessões Recentes</h3>
+                <ul class="session-history" id="session-history">
+                    <li class="session-item">
+                        <div>
+                            <span>Nenhuma sessão registrada</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>Anotações de Progresso</h3>
+                <p>Registre suas observações durante ou após as sessões de estimulação.</p>
+                <textarea id="notes" rows="4"
+                    style="width: 100%; background-color: rgba(255, 255, 255, 0.1); color: var(--text-color); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 4px; padding: 0.5rem;"
+                    placeholder="Adicione suas observações aqui..."></textarea>
+                <button id="save-notes" class="btn-primary" style="margin-top: 1rem;">Salvar Anotações</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#about">Sobre</a>
+            <a href="#research">Pesquisa</a>
+            <a href="#privacy">Privacidade</a>
+        </div>
+        <p>GammaBrain - Aplicativo de Estimulação Visual a 40Hz</p>
+        <p>Este aplicativo tem fins educacionais e experimentais apenas</p>
+        <p>Baseado nas pesquisas de Garza et al. (2020)</p>
+    </footer>
+
+    <script>
+        // Navigation tabs functionality
+        const tabs = document.querySelectorAll('.nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+
+                // Deactivate all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // Activate selected tab
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // 40Hz Stimulation controls
+        const intensitySlider = document.getElementById('intensity');
+        const intensityValue = document.getElementById('intensity-value');
+        const durationInput = document.getElementById('duration');
+        const startButton = document.getElementById('start-btn');
+        const stopButton = document.getElementById('stop-btn');
+        const stimScreen = document.getElementById('stim-screen');
+        const sessionTimer = document.getElementById('session-timer');
+        const sessionsCount = document.getElementById('sessions-count');
+
+        // Stimulation variables
+        let stimInterval = null;
+        let timerInterval = null;
+        let sessionSeconds = 0;
+        let isStimulating = false;
+
+        // Update intensity value display
+        intensitySlider.addEventListener('input', () => {
+            intensityValue.textContent = `${intensitySlider.value}%`;
+        });
+
+        // Start stimulation
+        startButton.addEventListener('click', () => {
+            if (isStimulating) return;
+
+            const intensity = intensitySlider.value;
+            const duration = durationInput.value;
+            const maxSeconds = duration * 60;
+
+            // Update button states
+            startButton.style.display = 'none';
+            stopButton.style.display = 'block';
+
+            // Reset timer
+            sessionSeconds = 0;
+            updateTimer();
+
+            // Extract stimulation logic to a separate function for reuse
+            function startStimulation(intensity, duration, maxSeconds, isFullscreen = false) {
+                // Set opacity based on intensity
+                const opacity = intensity / 100;
+                const lightColor = document.getElementById('light-color').value;
+
+                // Determine color based on selection
+                let colorValue;
+                switch (lightColor) {
+                    case 'red':
+                        colorValue = `rgba(255, 0, 0, ${opacity})`;
+                        break;
+                    case 'blue':
+                        colorValue = `rgba(0, 0, 255, ${opacity})`;
+                        break;
+                    case 'green':
+                        colorValue = `rgba(0, 255, 0, ${opacity})`;
+                        break;
+                    case 'white':
+                    default:
+                        colorValue = `rgba(255, 255, 255, ${opacity})`;
+                        break;
+                }
+
+                // Start the 40Hz flicker - 12.5ms on, 12.5ms off
+                isStimulating = true;
+                let isOn = false;
+
+                // Update button states if not in fullscreen mode
+                if (!isFullscreen) {
+                    startButton.style.display = 'none';
+                    stopButton.style.display = 'block';
+                }
+
+                stimInterval = setInterval(() => {
+                    if (isOn) {
+                        if (isFullscreen) {
+                            document.getElementById('fullscreen-content').style.backgroundColor = '#000';
+                        } else {
+                            stimScreen.style.backgroundColor = '#000';
+                        }
+                        isOn = false;
+                    } else {
+                        // Apply selected color with opacity based on intensity setting
+                        if (isFullscreen) {
+                            document.getElementById('fullscreen-content').style.backgroundColor = colorValue;
+                        } else {
+                            stimScreen.style.backgroundColor = colorValue;
+                        }
+                        isOn = true;
+                    }
+                }, 12.5); // 40Hz = 25ms period, half on and half off
+
+                // Update timer
+                timerInterval = setInterval(() => {
+                    sessionSeconds++;
+                    updateTimer(isFullscreen);
+
+                    // Check if session is complete
+                    if (sessionSeconds >= maxSeconds) {
+                        stopStimulation();
+                        saveSession(true);
+                    }
+                }, 1000);
+
+                // Add session to history once started
+                addSessionToHistory(duration, intensity);
+            }
+
+            // Check if fullscreen mode is active
+            const isFullscreenActive = document.getElementById('fullscreen-mode-container') !== null;
+
+            // Update timer
+            timerInterval = setInterval(() => {
+                sessionSeconds++;
+                updateTimer(isFullscreenActive);
+
+                // Check if session is complete
+                if (sessionSeconds >= maxSeconds) {
+                    stopStimulation();
+                    saveSession(true);
+                }
+            }, 1000);
+
+            // Add session to history once started
+            addSessionToHistory(duration, intensity);
+        });
+
+        // Stop stimulation function
+        function stopStimulation() {
+            if (!isStimulating) return;
+
+            // Clear intervals
+            clearInterval(stimInterval);
+            clearInterval(timerInterval);
+
+            // Reset stimulation state
+            isStimulating = false;
+
+            // Reset background color
+            stimScreen.style.backgroundColor = '#000';
+
+            // Check if in fullscreen mode and reset
+            const fullscreenContainer = document.getElementById('fullscreen-mode-container');
+            if (fullscreenContainer) {
+                document.body.removeChild(fullscreenContainer);
+            }
+
+            // Update button states
+            startButton.style.display = 'block';
+            stopButton.style.display = 'none';
+        }
+
+        // Save completed session
+        function saveSession(completed = false) {
+            try {
+                let sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
+
+                // Update the last session to mark as completed if needed
+                if (completed && sessions.length > 0) {
+                    const lastSession = sessions[sessions.length - 1];
+                    lastSession.completed = true;
+                    localStorage.setItem('gamma-sessions', JSON.stringify(sessions));
+                }
+
+                // Update the count display
+                updateSessionsCount();
+            } catch (e) {
+                console.error('Error saving session status', e);
+            }
+        }
+
+        // Stop button event listener
+        stopButton.addEventListener('click', () => {
+            stopStimulation();
+        });
+
+        // Update timer display
+        function updateTimer(useFullscreen = false) {
+            const minutes = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
+            const seconds = (sessionSeconds % 60).toString().padStart(2, '0');
+            const totalMinutes = Math.floor(durationInput.value);
+
+            const timerText = `${minutes}:${seconds} / ${totalMinutes}:00`;
+
+            if (useFullscreen) {
+                document.getElementById('fullscreen-timer').textContent = timerText;
+            } else {
+                sessionTimer.textContent = timerText;
+            }
+        }
+
+        // Protocol cards functionality
+        const protocolCards = document.querySelectorAll('.protocol-card');
+
+        protocolCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const protocolDuration = card.getAttribute('data-duration');
+                const protocolIntensity = card.getAttribute('data-intensity');
+
+                durationInput.value = protocolDuration;
+                intensitySlider.value = protocolIntensity;
+                intensityValue.textContent = `${protocolIntensity}%`;
+
+                // Switch to stimulation tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                document.querySelector('[data-tab="stim-40hz"]').classList.add('active');
+                document.getElementById('stim-40hz').classList.add('active');
+
+                // Scroll to stimulation controls
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Session history functionality
+        const sessionHistory = document.getElementById('session-history');
+        const notesTextarea = document.getElementById('notes');
+        const saveNotesButton = document.getElementById('save-notes');
+
+        function addSessionToHistory(duration, intensity) {
+            try {
+                // Create current date string
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const sessionId = now.getTime().toString();
+
+                // Store in localStorage
+                let sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
+                sessions.push({
+                    id: sessionId,
+                    date: dateStr,
+                    duration: duration,
+                    intensity: intensity,
+                    frequency: 40,
+                    completed: false,
+                    notes: ''
+                });
+                localStorage.setItem('gamma-sessions', JSON.stringify(sessions));
+
+                // Update the UI
+                updateSessionHistory();
+                updateSessionsCount();
+            } catch (e) {
+                console.error('Error saving to localStorage', e);
+            }
+        }
+
+        // Load and display session history
+        function updateSessionHistory() {
+            try {
+                const sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
+
+                if (sessions.length > 0) {
+                    sessionHistory.innerHTML = '';
+
+                    // Show only last 10 sessions in reverse chronological order
+                    const recentSessions = sessions.slice(-10).reverse();
+
+                    recentSessions.forEach(session => {
+                        const sessionItem = document.createElement('li');
+                        sessionItem.className = 'session-item';
+                        sessionItem.innerHTML = `
+                            <div>
+                                <strong>Estimulação ${session.frequency}Hz (${session.duration}min, ${session.intensity}%)</strong>
+                                <div class="session-date">${session.date}</div>
+                            </div>
+                            <div>
+                                <span class="badge">${session.completed ? 'Completo' : 'Interrompido'}</span>
+                            </div>
+                        `;
+
+                        sessionHistory.appendChild(sessionItem);
+                    });
+                }
+            } catch (e) {
+                console.error('Error loading from localStorage', e);
+            }
+        }
+
+        // Update the total sessions count
+        function updateSessionsCount() {
+            try {
+                const sessions = JSON.parse(localStorage.getItem('gamma-sessions')) || [];
+                const completedSessions = sessions.filter(s => s.completed).length;
+
+                if (sessions.length > 0) {
+                    sessionsCount.innerHTML = `
+                        Total: <strong>${sessions.length}</strong> sessões<br>
+                        Completadas: <strong>${completedSessions}</strong> sessões<br>
+                        Tempo total: <strong>${calculateTotalTime(sessions)}</strong>
+                    `;
+                } else {
+                    sessionsCount.textContent = 'Nenhuma sessão registrada';
+                }
+            } catch (e) {
+                console.error('Error updating sessions count', e);
+            }
+        }
+
+        // Calculate total time from all sessions
+        function calculateTotalTime(sessions) {
+            const totalMinutes = sessions.reduce((total, session) => {
+                // If session was completed, use full duration, otherwise estimate based on completed percentage
+                if (session.completed) {
+                    return total + parseInt(session.duration);
+                } else {
+                    // Assume 50% completion if not marked as completed
+                    return total + (parseInt(session.duration) / 2);
+                }
+            }, 0);
+
+            if (totalMinutes < 60) {
+                return `${totalMinutes} minutos`;
+            } else {
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                return `${hours}h ${minutes}min`;
+            }
+        }
+
+        // Save notes functionality
+        saveNotesButton.addEventListener('click', () => {
+            try {
+                const notes = notesTextarea.value.trim();
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                // Save notes to localStorage
+                let savedNotes = JSON.parse(localStorage.getItem('gamma-notes')) || [];
+                savedNotes.push({
+                    date: dateStr,
+                    text: notes
+                });
+                localStorage.setItem('gamma-notes', JSON.stringify(savedNotes));
+
+                // Clear textarea and show confirmation
+                notesTextarea.value = '';
+                alert('Anotações salvas com sucesso!');
+            } catch (e) {
+                console.error('Error saving notes', e);
+                alert('Erro ao salvar anotações. Por favor, tente novamente.');
+            }
+        });
+
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSessionHistory();
+            updateSessionsCount();
+        });
+
+        // Fullscreen mode functionality
+        const fullscreenButton = document.getElementById('fullscreen-btn');
+
+        fullscreenButton.addEventListener('click', () => {
+            if (isStimulating) {
+                // If already stimulating, first stop it
+                stopStimulation();
+            }
+
+            // Create fullscreen container
+            const fullscreenContainer = document.createElement('div');
+            fullscreenContainer.id = 'fullscreen-mode-container';
+            fullscreenContainer.className = 'fullscreen-mode';
+
+            // Create content for fullscreen mode
+            fullscreenContainer.innerHTML = `
+                <div id="fullscreen-content" style="width: 100%; height: 100%;"></div>
+                <div class="fullscreen-info">Pressione ESC para sair do modo tela cheia e parar a estimulação</div>
+                <div id="fullscreen-timer" class="fullscreen-timer">00:00</div>
+            `;
+
+            // Add to body
+            document.body.appendChild(fullscreenContainer);
+
+            // Start stimulation in fullscreen mode
+            const intensity = intensitySlider.value;
+            const duration = durationInput.value;
+            const maxSeconds = duration * 60;
+
+            // Reset timer
+            sessionSeconds = 0;
+            updateTimer(true);
+
+            // Start stimulation with same parameters but in fullscreen
+            startStimulation(intensity, duration, maxSeconds, true);
+
+            // Add ESC key event listener
+            document.addEventListener('keydown', handleEscKeyPress);
+        });
+
+        // Function to handle ESC key press
+        function handleEscKeyPress(event) {
+            if (event.key === 'Escape') {
+                stopStimulation();
+                document.removeEventListener('keydown', handleEscKeyPress);
+            }
+        }
+
+        // Extract stimulation logic to a separate function for reuse
+        function startStimulation(intensity, duration, maxSeconds, isFullscreen = false) {
+            // Set opacity based on intensity
+            const opacity = intensity / 100;
+            const lightColor = document.getElementById('light-color').value;
+
+            // Determine color based on selection
+            let colorValue;
+            switch (lightColor) {
+                case 'red':
+                    colorValue = `rgba(255, 0, 0, ${opacity})`;
+                    break;
+                case 'blue':
+                    colorValue = `rgba(0, 0, 255, ${opacity})`;
+                    break;
+                case 'green':
+                    colorValue = `rgba(0, 255, 0, ${opacity})`;
+                    break;
+                case 'white':
+                default:
+                    colorValue = `rgba(255, 255, 255, ${opacity})`;
+                    break;
+            }
+
+            // Start the 40Hz flicker - 12.5ms on, 12.5ms off
+            isStimulating = true;
+            let isOn = false;
+
+            // Update button states if not in fullscreen mode
+            if (!isFullscreen) {
+                startButton.style.display = 'none';
+                stopButton.style.display = 'block';
+            }
+
+            stimInterval = setInterval(() => {
+                if (isOn) {
+                    if (isFullscreen) {
+                        document.getElementById('fullscreen-content').style.backgroundColor = '#000';
+                    } else {
+                        stimScreen.style.backgroundColor = '#000';
+                    }
+                    isOn = false;
+                } else {
+                    // Apply selected color with opacity based on intensity setting
+                    if (isFullscreen) {
+                        document.getElementById('fullscreen-content').style.backgroundColor = colorValue;
+                    } else {
+                        stimScreen.style.backgroundColor = colorValue;
+                    }
+                    isOn = true;
+                }
+            }, 12.5); // 40Hz = 25ms period, half on and half off
+
+            // Update timer
+            timerInterval = setInterval(() => {
+                sessionSeconds++;
+                updateTimer(isFullscreen);
+
+                // Check if session is complete
+                if (sessionSeconds >= maxSeconds) {
+                    stopStimulation();
+                    saveSession(true);
+                }
+            }, 1000);
+
+            // Add session to history once started
+            addSessionToHistory(duration, intensity);
+        }
+
+        // Update start button click handler to use the new function
+        startButton.addEventListener('click', () => {
+            if (isStimulating) return;
+
+            const intensity = intensitySlider.value;
+            const duration = durationInput.value;
+            const maxSeconds = duration * 60;
+
+            startStimulation(intensity, duration, maxSeconds, false);
+        });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.error('Service Worker registration failed', err));
+            });
+        }
+    </script>
+</body>
+
+</html>
